@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response
-from pyfcm import FCMNotification
+#from pyfcm import FCMNotification
 import sqlite3
 from os.path import isfile
 import json
@@ -14,7 +14,7 @@ def connect_db(dbname):
     connection = sqlite3.connect('pingamos.db')
     cursor = connection.cursor()
     if not db_is_created:
-        cursor.execute("CREATE TABLE pings (id INTEGER PRIMARY KEY, name TEXT, lat INTEGER, lng INTEGER);")
+        cursor.execute("CREATE TABLE pings (id REAL PRIMARY KEY, name TEXT, lat REAL, lng REAL);")
         cursor.execute("CREATE TABLE users (id TEXT PRIMARY KEY);")
         connection.commit()
     return connection, cursor
@@ -25,7 +25,7 @@ app = Flask(__name__)
 def registerid():
     conn, cursor = connect_db("pingamos.db")
     userid = request.args.get('id')
-    cursor.execute("INSERT INTO users('id') VALUES(" + userid  + ");")
+    cursor.execute("INSERT INTO users('id') VALUES('" + userid  + "');")
     conn.commit()
 
     ### METER RESPONSE CASO DÊ COCÓ ###
@@ -33,25 +33,25 @@ def registerid():
 @app.route("/ping", methods=["POST"])
 def storeping():
     name = request.args.get('name')
-    lat = float(request.args.get('lat'))
-    lng = float(request.args.get('lng'))
+    lat = request.args.get('lat')
+    lng = request.args.get('lng')
     conn, cursor = connect_db("pingamos.db")
-    cursor.execute("INSERT INTO pings('name','lat','lng') VALUES("+ name +","+ lat +","+ lng +");")
+    cursor.execute("INSERT INTO pings('name','lat','lng') VALUES('"+ name +"',"+ lat +","+ lng +");")
     conn.commit()
     # HERE BE DRAGONS
     # and untried code and APIs
     # proceed with caution
     # make unit tests for me please I want to sleep
-    cursor.execute("SELECT * FROM users;")
+    #cursor.execute("SELECT * FROM users;")
     # This should have a list with all the user ids
-    data = cursor.fetchall()
+    #data = cursor.fetchall()
     # Now to get FCM to notify them all
-    message = {
-            "name": name,
-            "lat":  lat,
-            "lng":  lng
-            }
-    result = push_service.notify_multiple_devices(registration_ids=data, data_message=message)
+    #message = {
+    #        "name": name,
+    #        "lat":  lat,
+    #        "lng":  lng
+    #        }
+    #result = push_service.notify_multiple_devices(registration_ids=data, data_message=message)
 
 
 
