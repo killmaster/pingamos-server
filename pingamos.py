@@ -36,7 +36,7 @@ def storeping():
     lat = request.args.get('lat')
     lng = request.args.get('lng')
     conn, cursor = connect_db("pingamos.db")
-    cursor.execute("INSERT INTO pings('name','lat','lng') VALUES('"+ name +"',"+ lat +","+ lng +");")
+    cursor.execute("INSERT INTO pings('name','lat','lng') VALUES(NULL,'"+ name +"',"+ lat +","+ lng +");")
     conn.commit()
     # HERE BE DRAGONS
     # and untried code and APIs
