@@ -1,7 +1,13 @@
 from flask import Flask, request, make_response
+from pyfcm import FCMNotification
 import sqlite3
 from os.path import isfile
 import json
+import os
+
+# TODO check db connections
+
+push_service = FCMNotification(api_key=os.environ['FCM'])
 
 def connect_db(dbname):
     db_is_created = isfile(dbname)
@@ -32,6 +38,22 @@ def storeping():
     conn, cursor = connect_db("pingamos.db")
     cursor.execute("INSERT INTO pings('name','lat','lng') VALUES("+ name +","+ lat +","+ lng +");")
     conn.commit()
+    # HERE BE DRAGONS
+    # and untried code and APIs
+    # proceed with caution
+    # make unit tests for me please I want to sleep
+    cursor.execute("SELECT * FROM users;")
+    # This should have a list with all the user ids
+    data = cursor.fetchall()
+    # Now to get FCM to notify them all
+    message = {
+            "name": name,
+            "lat":  lat,
+            "lng":  lng
+            }
+    result = push_service.notify_multiple_devices(registration_ids=data, data_message=message)
+
+
 
 @app.route("/pings", methods=["GET"])
 def getpings():
