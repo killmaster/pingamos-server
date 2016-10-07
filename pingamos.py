@@ -7,7 +7,7 @@ import os
 
 # TODO check db connections
 
-push_service = FCMNotification(api_key=os.environ['FCM'])
+#push_service = FCMNotification(api_key=os.environ['FCM'])
 
 def connect_db(dbname):
     db_is_created = isfile(dbname)
@@ -85,4 +85,4 @@ def getping():
 
 if __name__ == '__main__':
     conn, cursor = connect_db('pingamos.db')
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
