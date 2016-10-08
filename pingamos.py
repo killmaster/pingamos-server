@@ -4,6 +4,15 @@ import sqlite3
 from os.path import isfile
 import json
 import os
+import asyncio
+import websockets
+
+# Websockets because of time restraints
+# This should only be used if the push notifications aren't working
+async def pushmebaby(websocket, path, onemoretime):
+    name = await.websocket.recv()
+    # Let's watch it work shall we?
+    print("")
 
 # TODO check db connections
 
@@ -23,16 +32,19 @@ app = Flask(__name__)
 
 @app.route("/registerid", methods=["POST"])
 def registerid():
-    conn, cursor = connect_db("pingamos.db")
-    userid = request.args.get('id')
-    cursor.execute("INSERT INTO users('id') VALUES('" + userid  + "');")
-    conn.commit()
-
-    ### METER RESPONSE CASO DÊ COCÓ ###
-    res = make_response()
-    res.status_code = 200
-    # and we send it back as a response
-    return res
+    try:
+        conn, cursor = connect_db("pingamos.db")
+        userid = request.args.get('id')
+        cursor.execute("INSERT INTO users('id') VALUES('" + userid  + "');")
+        conn.commit()
+    except sqlite3.Error as e:
+        print("sqlite error " + e)
+    finally:
+        ### METER RESPONSE CASO DÊ COCÓ ###
+        res = make_response()
+        res.status_code = 200
+        # and we send it back as a response
+        return res
 
 @app.route("/ping", methods=["POST"])
 def storeping():
